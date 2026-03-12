@@ -8,4 +8,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SellerBL\SellerBL.csproj" />
+    <ProjectReference Include="..\SellerDL\SellerDL.csproj" />
+  </ItemGroup>
+
 </Project>
