@@ -9,8 +9,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SellerBL\SellerBL.csproj" />
-    <ProjectReference Include="..\SellerDL\SellerDL.csproj" />
+    <Compile Remove="sellItemBL\**" />
+    <Compile Remove="sellItemDL\**" />
+    <Compile Remove="sellModels\**" />
+    <EmbeddedResource Remove="sellItemBL\**" />
+    <EmbeddedResource Remove="sellItemDL\**" />
+    <EmbeddedResource Remove="sellModels\**" />
+    <None Remove="sellItemBL\**" />
+    <None Remove="sellItemDL\**" />
+    <None Remove="sellModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="sellItemBL\sellItemBL.csproj" />
+    <ProjectReference Include="sellModels\sellModels.csproj" />
   </ItemGroup>
 
 </Project>
