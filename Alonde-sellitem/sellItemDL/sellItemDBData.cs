@@ -12,7 +12,7 @@ namespace sellItemDL
     {
        
          private string connectionString
-            = "Data Source = localhost\\SQLEXPRESS; Initial Catalog = sellerDatabase; Integrated Security = True; TrustServerCertificate=True;";
+            = "Data Source=.;Initial Catalog = sellerDatabase; Integrated Security = True; TrustServerCertificate=True;";
         private SqlConnection sqlConnection;
         public sellItemDBData() {
             sqlConnection = new SqlConnection(connectionString);

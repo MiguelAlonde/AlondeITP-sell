@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using System.Text.Json;
+﻿using System.Text.Json;
 using sellItemDL;
 using sellModels;
 
@@ -8,14 +7,23 @@ namespace AccountManagementDataService
     public class sellJson : Isell
     {
         private List<smodel> Jsonsell = new List<smodel>();
-
         private string _jsonFileName;
 
         public sellJson()
         {
-            _jsonFileName = $"{AppDomain.CurrentDomain.BaseDirectory}/jsonn.json";
+            _jsonFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "jsonn.json");
 
+            EnsureFileExists();   // ✅ make sure file exists first
             PopulateJsonFile();
+        }
+
+        // ✅ NEW: Ensure file exists
+        private void EnsureFileExists()
+        {
+            if (!File.Exists(_jsonFileName))
+            {
+                File.WriteAllText(_jsonFileName, "[]");
+            }
         }
 
         private void PopulateJsonFile()
@@ -24,36 +32,46 @@ namespace AccountManagementDataService
 
             if (Jsonsell.Count <= 0)
             {
-                Jsonsell.Add(new smodel { sellerId = Guid.NewGuid(), sellerName = "admin", ItemId = Guid.NewGuid(), Items ="Food", Price = 10 });
-           
+                Jsonsell.Add(new smodel
+                {
+                    sellerId = Guid.NewGuid(),
+                    sellerName = "admin",
+                    ItemId = Guid.NewGuid(),
+                    Items = "Food",
+                    Price = 10
+                });
+
                 SaveDataToJsonFile();
             }
         }
 
+        // ✅ FIXED: clean overwrite (no corruption risk)
         private void SaveDataToJsonFile()
         {
-            using (var outputStream = File.OpenWrite(_jsonFileName))
-            {
-                JsonSerializer.Serialize<List<smodel>>(
-                    new Utf8JsonWriter(outputStream, new JsonWriterOptions
-                    { SkipValidation = true, Indented = true })
-                    , Jsonsell);
-            }
+            File.WriteAllText(_jsonFileName,
+                JsonSerializer.Serialize(Jsonsell, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                }));
         }
 
+        // ✅ FIXED: auto-create + null safety
         private void RetrieveDataFromJsonFile()
         {
-            using (var jsonFileReader = File.OpenText(this._jsonFileName))
-            {
-                this.Jsonsell = JsonSerializer.Deserialize<List<smodel>>
-                    (jsonFileReader.ReadToEnd(), new JsonSerializerOptions
-                    { PropertyNameCaseInsensitive = true })
-                    .ToList();
-            }
+            EnsureFileExists(); // 🔥 critical fix
+
+            var json = File.ReadAllText(_jsonFileName);
+
+            Jsonsell = JsonSerializer.Deserialize<List<smodel>>(json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<smodel>();
         }
 
         public void Add(smodel s)
         {
+            RetrieveDataFromJsonFile();
             Jsonsell.Add(s);
             SaveDataToJsonFile();
         }
@@ -67,7 +85,7 @@ namespace AccountManagementDataService
         public smodel? GetBySeller(string seller)
         {
             RetrieveDataFromJsonFile();
-            return Jsonsell.Where(x => x.sellerName == seller).FirstOrDefault();
+            return Jsonsell.FirstOrDefault(x => x.sellerName == seller);
         }
 
         public void UpdatePrice(smodel s)
@@ -78,11 +96,9 @@ namespace AccountManagementDataService
 
             if (existing != null)
             {
-
                 existing.Price = s.Price;
+                SaveDataToJsonFile();
             }
-
-            SaveDataToJsonFile();
         }
 
         public void Delete(Guid id)
@@ -93,15 +109,9 @@ namespace AccountManagementDataService
 
             if (existing != null)
             {
-
-                Jsonsell.Remove(existing);  
+                Jsonsell.Remove(existing);
+                SaveDataToJsonFile();
             }
-
-            SaveDataToJsonFile();
         }
-
-
-
-
     }
 }
