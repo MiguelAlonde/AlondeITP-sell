@@ -1,4 +1,5 @@
 ﻿using System;
+using AccountManagementDataService;
 using sellItemDL;
 using sellModels;
 namespace sellItemBL
@@ -7,6 +8,7 @@ namespace sellItemBL
     {
         public sellInMemory sl = new sellInMemory();
         selldataservice sd = new selldataservice(new sellItemDBData());
+        sellJson sj = new sellJson();   
         public void AddItems(string sellerName, string Items, int price)
         {
             var item = new smodel()
@@ -20,6 +22,7 @@ namespace sellItemBL
 
             sl.Add(item);
             sd.Add(item);
+            sj.Add(item);
         }
         public List<smodel> GetInventory() 
         { 
@@ -40,6 +43,7 @@ namespace sellItemBL
             {
                 item.Price = newPrice;
                 sd.UpdatePrice(item);
+                sj.UpdatePrice(item);
             }
         }
 
