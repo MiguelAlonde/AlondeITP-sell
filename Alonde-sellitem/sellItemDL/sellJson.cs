@@ -13,11 +13,11 @@ namespace AccountManagementDataService
         {
             _jsonFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "jsonn.json");
 
-            EnsureFileExists();   // ✅ make sure file exists first
+            EnsureFileExists();  
             PopulateJsonFile();
         }
 
-        // ✅ NEW: Ensure file exists
+       
         private void EnsureFileExists()
         {
             if (!File.Exists(_jsonFileName))
@@ -45,7 +45,7 @@ namespace AccountManagementDataService
             }
         }
 
-        // ✅ FIXED: clean overwrite (no corruption risk)
+      
         private void SaveDataToJsonFile()
         {
             File.WriteAllText(_jsonFileName,
@@ -55,10 +55,10 @@ namespace AccountManagementDataService
                 }));
         }
 
-        // ✅ FIXED: auto-create + null safety
+       
         private void RetrieveDataFromJsonFile()
         {
-            EnsureFileExists(); // 🔥 critical fix
+            EnsureFileExists(); 
 
             var json = File.ReadAllText(_jsonFileName);
 
